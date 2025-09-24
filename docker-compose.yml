@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  konsulent-api:
+    build: ./konsulent-api
+    container_name: konsulent-api
+    ports:
+      - "8001:8000"
+
+  llm-verktøy-api:
+    build: ./llm-verktøy-api
+    container_name: llm-verktøy-api
+    ports:
+      - "8002:8000"
+    depends_on:
+      - konsulent-api
