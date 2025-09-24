@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  konsulent-api:
+    build: ./konsulent-api
+    # Ikke bruk container når vi kjører lokalt
+    container_name: konsulent-api-dev
+    command: uv run uvicorn konsulent-api.app.main:app --reload --host 0.0.0.0 --port 8001
+    volumes:
+      - ./konsulent-api:/app/konsulent-api
+      - ./pyproject.toml:/app/pyproject.toml
+    ports:
+      - "8001:8001"
+
+  llm-verktøy-api:
+    build: ./llm-verktøy-api
+    container_name: llm-verktøy-api-dev
+    command: uv run uvicorn llm-verktøy-api.app.main:app --reload --host 0.0.0.0 --port 8002
+    volumes:
+      - ./llm-verktøy-api:/app/llm-verktøy-api
+      - ./pyproject.toml:/app/pyproject.toml
+    ports:
+      - "8002:8002"
+    depends_on:
+      - konsulent-api
