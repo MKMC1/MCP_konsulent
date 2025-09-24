@@ -1,10 +1,9 @@
 FROM python:3.14
-
-RUN pip install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
-COPY requirements.txt .
-RUN uv pip install --system -r requirements.txt
+COPY pyproject.toml .
+RUN uv sync --frozen --system
 
 COPY app/ app/
 
