@@ -51,8 +51,8 @@ async def tilgjengelige_konsulenter_sammendrag(
 
     try:
         svar = await call_openrouter(messages, model=model)
-        ai_content = svar["choices"][0]["message"]["content"]
-        data = json.loads(ai_content)  # prøv å parse til JSON
+        ai_innhold = svar["choices"][0]["message"]["content"]
+        data = json.loads(ai_innhold)  # prøv å parse til JSON
         return data
     except Exception:
         # fallback: enkel oppsummering
