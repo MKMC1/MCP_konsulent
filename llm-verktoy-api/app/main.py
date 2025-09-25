@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Query
 import httpx
 from .openrouter_client import call_openrouter
+from .schemas import SammendragOut
+import json
 
 app = FastAPI()
 KONSULENT_API_URL = "http://konsulent-api:8000/konsulenter"
 
-@app.get("/tilgjengelige-konsulenter/sammendrag")
+@app.get("/tilgjengelige-konsulenter/sammendrag", response_model=SammendragOut)
 async def tilgjengelige_konsulenter_sammendrag(
     min_tilgjengelighet_prosent: int = Query(..., description="Minimum tilgjengelighet prosent"),
     pakrevd_ferdighet: str = Query(..., description="Påkrevd ferdighet"),
@@ -30,23 +32,39 @@ async def tilgjengelige_konsulenter_sammendrag(
         {
             "role": "system",
             "content": (
-                "Du er en AI assistent for bemanning. Skriv i klar og konsis menneskeleselig sammendrag"
-                "hvor konsulentene er tilgjengelige gitt kriterier gitt av bruker. Svar som i dette eksempelformatet: "
-                "Fant 2 konsulenter med minst 50% tilgjengelighet og ferdigheten 'python'. Anna K. har 60% tilgjengelighet. Leo T. har 80% tilgjengelighet."
+                "Du er en AI-assistent for bemanning av konsulenter. Svar kun i JSON-format. "
+                "JSON-objektet må inneholde to felter: "
+                "'sammendrag' (en menneskeleselig oppsummering av resultatet. Svar som i dette eksempel formatet: "
+                "Fant 2 konsulenter med minst 50% tilgjengelighet og ferdigheten 'python'. Anna K. har 60% tilgjengelighet. Leo T. har 80% tilgjengelighet.) "
+                "og 'konsulenter' (en liste med objekter for hver konsulent med 'navn', 'tilgjengelighet' og 'ferdighet'). "
             ),
         },
         {
             "role": "user",
             "content": (
-                f"Ledige Konsulenter: {filtrert}. Minimum tilgjengelighet: {min_tilgjengelighet_prosent}. "
+                f"Ledige Konsulenter: {filtrert}." 
+                f"Minimum tilgjengelighet: {min_tilgjengelighet_prosent}. "
                 f"Påkrevd ferdighet: {pakrevd_ferdighet}."
             ),
         },
     ]
 
-    svar = await call_openrouter(messages, model=model)
-
-    return {
-        "model": model,
-        "sammendrag": svar["choices"][0]["message"]["content"],
-    }
+    try:
+        svar = await call_openrouter(messages, model=model)
+        ai_content = svar["choices"][0]["message"]["content"]
+        data = json.loads(ai_content)  # prøv å parse til JSON
+        return data
+    except Exception:
+        # fallback: enkel oppsummering
+        if not filtrert:
+            return {
+                "sammendrag": f"Ingen konsulenter funnet med minst {min_tilgjengelighet_prosent}% tilgjengelighet og ferdigheten '{pakrevd_ferdighet}'.",
+                "konsulenter": [],
+            }
+        return {
+            "sammendrag": f"Fant {len(filtrert)} konsulenter med ferdigheten '{pakrevd_ferdighet}'.",
+            "konsulenter": [
+                {"navn": k["navn"], "tilgjengelighet": f"{100 - k['belastning_prosent']}%"}
+                for k in filtrert
+            ],
+        }
