@@ -3,6 +3,8 @@
 Dette prosjektet er en enkel MCP-løsning med to mikrotjenester:
 - **konsulent-api**: Tilbyr en liste over konsulenter.
 - **llm-verktøy-api**: Filtrerer konsulenter og returnerer et sammendrag basert på tilgjengelighet og ferdigheter.
+## Arkitektur
+![Arkitekturdiagram](docs/arkitektur.drawio.png)
 
 ## 🚀 Kom i gang
 
