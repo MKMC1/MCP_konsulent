@@ -8,7 +8,7 @@ HEADERS = {
     "Authorization": f"Bearer {OPENROUTER_API_KEY}",
     "Content-Type": "application/json",
 }
-
+# Funksjon som caller openrouter
 async def call_openrouter(messages, model="openai/gpt-4o-mini"):
     async with httpx.AsyncClient() as client:
         response = await client.post(

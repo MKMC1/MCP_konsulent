@@ -28,7 +28,16 @@ Dette prosjektet er en enkel MCP-løsning med to mikrotjenester:
 7. Gå ned til responses og response body for å se sammendraget i JSON-format.
 8. Kjør docker compose down for å fjerne konteinere.
 
-Testkjøring:
-   ```bash```
+I tilfelle dette ikke fungerer kan det være en caching problem prøv ett av disse kommandoene:
+1. docker compose up --build
+2. docker compose down
+   docker system prune
+
+
+Testkjøring individuelt:
+   ```sh
    docker compose run konsulent-api pytest
+   ```
+   ```sh
    docker compose run llm-verktoy-api pytest
+   ```

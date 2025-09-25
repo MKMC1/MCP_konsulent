@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
-
+# Tester at dataen inneholder parametere spesifisert i case
 def test_get_konsulenter():
     response = client.get("/konsulenter")
     assert response.status_code == 200

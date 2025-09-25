@@ -5,7 +5,7 @@ WORKDIR /app
 COPY ./pyproject.toml .
 RUN uv sync
 ENV PATH="/app/.venv/bin:$PATH"
-# Kopier kun denne tjenestens kode
+
 COPY /app app/
 COPY /tests tests/
 
