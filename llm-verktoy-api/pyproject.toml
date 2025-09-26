@@ -1,0 +1,15 @@
+[project]
+name = "llm-verktoy-api"
+version = "0.1.0"
+description = "Klient-API som filtrerer og oppsummerer konsulenter"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "httpx",
+    "pytest",
+    "python-dotenv",
+    "pydantic"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
